@@ -40,12 +40,13 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.napier)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -87,7 +88,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.radusalagean.stringresourcessamplekmp.MainKt"
+        mainClass = "com.radusalagean.stringresourcessamplekmp.Main_desktopKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
