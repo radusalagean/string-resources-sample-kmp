@@ -18,6 +18,7 @@ import com.radusalagean.stringresourcessamplekmp.ui.theme.CustomGreen
 import com.radusalagean.stringresourcessamplekmp.uitext.UIText
 import com.radusalagean.stringresourcessamplekmp.uitext.buildUIText
 import com.radusalagean.stringresourcessamplekmp.uitext.uiTextAnnotationList
+import com.radusalagean.stringresourcessamplekmp.util.LanguageManager
 import stringresourcessamplekmp.composeapp.generated.resources.Res
 import stringresourcessamplekmp.composeapp.generated.resources.greeting
 import stringresourcessamplekmp.composeapp.generated.resources.language_english
@@ -32,7 +33,9 @@ import stringresourcessamplekmp.composeapp.generated.resources.section_title_lan
 import stringresourcessamplekmp.composeapp.generated.resources.shopping_cart_status
 import stringresourcessamplekmp.composeapp.generated.resources.shopping_cart_status_insert_shopping_cart
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    private val languageManager: LanguageManager
+) : ViewModel() {
 
     // Section: Language
     val languageSectionTitle = UIText.Res(Res.string.section_title_language)
@@ -51,14 +54,12 @@ class MainViewModel : ViewModel() {
         languageOptions.indexOfFirst { it.languageCode == selectedLanguageCode }
     }
 
-    fun syncSelectedLanguage() { // TODO
-//        val locales = AppCompatDelegate.getApplicationLocales()
-//        selectedLanguageCode = locales.get(0)?.language ?: "en"
+    fun syncSelectedLanguage() {
+        selectedLanguageCode = languageManager.getCurrentLanguageCode()
     }
 
-    fun onLanguageSelected(code: String) { // TODO
-//        val localesList = LocaleListCompat.forLanguageTags(code)
-//        AppCompatDelegate.setApplicationLocales(localesList)
+    fun onLanguageSelected(code: String) {
+        languageManager.onLanguageSelected(code)
     }
 
     // Section: Examples

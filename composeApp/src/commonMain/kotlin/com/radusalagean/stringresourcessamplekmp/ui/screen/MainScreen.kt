@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,15 +23,18 @@ import com.radusalagean.stringresourcessamplekmp.ui.component.Section
 import org.jetbrains.compose.resources.stringResource
 import stringresourcessamplekmp.composeapp.generated.resources.Res
 import stringresourcessamplekmp.composeapp.generated.resources.app_name
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.radusalagean.stringresourcessamplekmp.ui.component.ExampleEntry
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainScreen(
-    viewModel: MainViewModel = viewModel { MainViewModel() },
+    viewModel: MainViewModel = koinViewModel<MainViewModel>(),
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.syncSelectedLanguage()
+    }
     MaterialTheme {
         Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
             Column(Modifier.fillMaxSize().padding(innerPadding)) {
