@@ -14,7 +14,6 @@ class LanguageManagerIOS : LanguageManager {
     }
 
     override fun onLanguageSelected(code: String) {
-        // TODO Use an in-app language picker API if possible
         val url = NSURL(string = UIApplicationOpenSettingsURLString)
         val application = UIApplication.sharedApplication
         if (application.canOpenURL(url)) {
