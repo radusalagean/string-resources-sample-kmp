@@ -23,8 +23,12 @@ class UITextBuilder {
         stringResource: StringResource,
         resBuilder: ResBuilder.() -> Unit = { }
     ) {
-        val args = ResBuilder().apply(resBuilder).build()
-        components += UIText.Res(stringResource = stringResource, args = args.toTypedArray())
+        val config = ResBuilder().apply(resBuilder).build()
+        components += UIText.Res(
+            stringResource = stringResource,
+            args = config.args,
+            baseAnnotations = config.annotations
+        )
     }
 
     fun pluralRes(
@@ -34,35 +38,8 @@ class UITextBuilder {
             arg(quantity.toString())
         }
     ) {
-        val args = ResBuilder().apply(resBuilder).build()
+        val config = ResBuilder().apply(resBuilder).build()
         components += UIText.PluralRes(
-            pluralStringResource = pluralStringResource,
-            quantity = quantity,
-            args = args.toTypedArray()
-        )
-    }
-
-    fun resAnnotated(
-        stringResource: StringResource,
-        resAnnotatedBuilder: ResAnnotatedBuilder.() -> Unit = { }
-    ) {
-        val config = ResAnnotatedBuilder().apply(resAnnotatedBuilder).build()
-        components += UIText.ResAnnotated(
-            stringResource = stringResource,
-            args = config.args,
-            baseAnnotations = config.annotations
-        )
-    }
-
-    fun pluralResAnnotated(
-        pluralStringResource: PluralStringResource,
-        quantity: Int,
-        resAnnotatedBuilder: ResAnnotatedBuilder.() -> Unit = {
-            arg(quantity.toString())
-        }
-    ) {
-        val config = ResAnnotatedBuilder().apply(resAnnotatedBuilder).build()
-        components += UIText.PluralResAnnotated(
             pluralStringResource = pluralStringResource,
             quantity = quantity,
             args = config.args,
@@ -79,22 +56,6 @@ class UITextBuilder {
 
 @UITextDslMarker
 class ResBuilder {
-    private val args = mutableListOf<Any>()
-
-    fun arg(arg: CharSequence) {
-        args += arg
-    }
-
-    fun arg(arg: UIText) {
-        args += arg
-    }
-
-    fun build(): List<Any> = args
-}
-
-@UITextDslMarker
-class ResAnnotatedBuilder {
-
     private val annotations = mutableListOf<UITextAnnotation>()
     private val args = mutableListOf<Pair<Any, List<UITextAnnotation>>>()
 

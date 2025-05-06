@@ -84,9 +84,9 @@ class MainViewModel(
             }
         ),
         ExampleEntryModel(
-            label = "resAnnotated",
+            label = "res - annotated",
             value = UIText {
-                resAnnotated(Res.string.shopping_cart_status) {
+                res(Res.string.shopping_cart_status) {
                     arg(
                         UIText {
                             pluralRes(Res.plurals.products, 30)
@@ -94,7 +94,7 @@ class MainViewModel(
                     )
                     arg(
                         UIText {
-                            resAnnotated(Res.string.shopping_cart_status_insert_shopping_cart) {
+                            res(Res.string.shopping_cart_status_insert_shopping_cart) {
                                 annotation {
                                     +SpanStyle(color = Color.Red)
                                 }
@@ -105,9 +105,9 @@ class MainViewModel(
             }
         ),
         ExampleEntryModel(
-            label = "pluralResAnnotated",
+            label = "pluralRes - annotated",
             value = UIText {
-                pluralResAnnotated(Res.plurals.products, 30) {
+                pluralRes(Res.plurals.products, 30) {
                     arg(30.toString()) {
                         +SpanStyle(color = CustomGreen)
                     }
@@ -124,10 +124,10 @@ class MainViewModel(
                     arg("Radu")
                 }
                 raw(" ")
-                resAnnotated(Res.string.shopping_cart_status) {
+                res(Res.string.shopping_cart_status) {
                     arg(
                         UIText {
-                            pluralResAnnotated(Res.plurals.products, 30) {
+                            pluralRes(Res.plurals.products, 30) {
                                 arg(30.toString()) {
                                     +SpanStyle(color = CustomGreen)
                                 }
@@ -139,7 +139,7 @@ class MainViewModel(
                     )
                     arg(
                         UIText {
-                            resAnnotated(Res.string.shopping_cart_status_insert_shopping_cart) {
+                            res(Res.string.shopping_cart_status_insert_shopping_cart) {
                                 annotation {
                                     +SpanStyle(color = Color.Red)
                                 }
@@ -156,10 +156,10 @@ class MainViewModel(
                     arg("Radu")
                 }
                 raw(" ")
-                resAnnotated(Res.string.shopping_cart_status) {
+                res(Res.string.shopping_cart_status) {
                     arg(
                         UIText {
-                            pluralResAnnotated(Res.plurals.products, 30) {
+                            pluralRes(Res.plurals.products, 30) {
                                 arg(30.toString()) {
                                     +SpanStyle(color = CustomGreen)
                                 }
@@ -178,7 +178,7 @@ class MainViewModel(
                     }
                 }
                 raw(" ")
-                resAnnotated(Res.string.proceed_to_checkout) {
+                res(Res.string.proceed_to_checkout) {
                     annotation {
                         +LinkAnnotation.Url(
                             url = "https://example.com",
@@ -199,13 +199,13 @@ class MainViewModel(
                 res(Res.string.greeting) {
                     arg("Radu")
                 }
-                resAnnotated(Res.string.shopping_cart_status) {
+                res(Res.string.shopping_cart_status) {
                     annotation {
                         +ParagraphStyle()
                     }
                     arg(
                         UIText {
-                            pluralResAnnotated(Res.plurals.products, 30) {
+                            pluralRes(Res.plurals.products, 30) {
                                 annotation {
                                     +SpanStyle(fontWeight = FontWeight.Bold)
                                     SpanStyle(fontWeight = FontWeight.Bold) // TODO: Restrict if possible
@@ -224,7 +224,7 @@ class MainViewModel(
                         +SpanStyle(color = Color.Red)
                     }
                 }
-                resAnnotated(Res.string.proceed_to_checkout) {
+                res(Res.string.proceed_to_checkout) {
                     annotation {
                         +LinkAnnotation.Url(
                             url = "https://example.com",
@@ -245,7 +245,7 @@ class MainViewModel(
                 val linkStyle = TextLinkStyles(
                     SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)
                 )
-                resAnnotated(Res.string.legal_footer_example) {
+                res(Res.string.legal_footer_example) {
                     arg(
                         UIText {
                             res(Res.string.legal_footer_example_insert_terms_of_service)
@@ -255,6 +255,7 @@ class MainViewModel(
                             url = "https://radusalagean.com/example-terms-of-service/",
                             styles = linkStyle
                         )
+                        +SpanStyle(color = Color.Green)
                     }
                     arg(
                         UIText {

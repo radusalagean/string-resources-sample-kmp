@@ -45,7 +45,7 @@ sealed class UIText {
     }
 
     @Composable
-    fun buildStringComposable(): String {
+    fun buildStringComposable(): String { // TODO Rename
         val string by rememberResourceState({ "" }) {
             buildString()
         }
@@ -61,7 +61,7 @@ sealed class UIText {
     }
 
     @Composable
-    fun buildAnnotatedStringComposable(): AnnotatedString {
+    fun buildAnnotatedStringComposable(): AnnotatedString { // TODO Rename
         val annotatedString by rememberResourceState({ AnnotatedString("") }) {
             buildAnnotatedString()
         }
@@ -75,18 +75,10 @@ sealed class UIText {
         }
     }
 
-    private suspend fun resolveArg(arg: Any) = when (arg) {
+    protected suspend fun resolveArg(arg: Any) = when (arg) {
         is UIText -> arg.build()
         else -> arg
     }
-
-    protected suspend fun resolveArgs(args: List<Any>?): List<Any>? {
-        args?.takeIf { it.isNotEmpty() } ?: return null
-        return args.map {
-            resolveArg(it)
-        }
-    }
-
 
     /**
      * In order to work around the default behavior of Android's getString(...) which will
@@ -125,34 +117,8 @@ sealed class UIText {
     )
 
     protected suspend fun buildAnnotatedString(
-        resolvedArgs: List<Any>,
-        baseStringProvider: suspend () -> String
-    ): CharSequence {
-        return buildAnnotatedString(
-            resolvedArgs = resolvedArgs.map { it to null },
-            baseAnnotations = null,
-            baseStringProvider = baseStringProvider
-        )
-    }
-
-    protected suspend fun resolveArgsAndBuildAnnotatedString(
-        args: List<Pair<Any, List<UITextAnnotation>?>>,
-        baseAnnotations: List<UITextAnnotation>?,
-        baseStringProvider: suspend () -> String
-    ): CharSequence {
-        val resolvedArgs = args.map {
-            resolveArg(it.first) to it.second
-        }
-        return buildAnnotatedString(
-            resolvedArgs = resolvedArgs,
-            baseAnnotations = baseAnnotations,
-            baseStringProvider = baseStringProvider
-        )
-    }
-
-    private suspend fun buildAnnotatedString(
-        resolvedArgs: List<Pair<Any, List<UITextAnnotation>?>>,
-        baseAnnotations: List<UITextAnnotation>?,
+        resolvedArgs: List<Pair<Any, List<UITextAnnotation>>>,
+        baseAnnotations: List<UITextAnnotation>,
         baseStringProvider: suspend () -> String
     ): CharSequence {
         return buildAnnotatedString {
@@ -179,11 +145,11 @@ sealed class UIText {
     }
 
     private fun AnnotatedString.Builder.handleUITextAnnotations(
-        uiTextAnnotations: List<UITextAnnotation>?,
+        uiTextAnnotations: List<UITextAnnotation>,
         block: () -> Unit
     ) {
 
-        if (uiTextAnnotations.isNullOrEmpty()) {
+        if (uiTextAnnotations.isEmpty()) {
             block()
             return
         }
@@ -223,53 +189,58 @@ sealed class UIText {
         }
     }
 
-    class Res(
+    data class Res(
         val stringResource: StringResource,
-        val args: List<Any> = emptyList()
+        val args: List<Pair<Any, List<UITextAnnotation>>>,
+        val baseAnnotations: List<UITextAnnotation>
     ) : UIText() {
 
-        constructor(
-            stringResource: StringResource,
-            vararg args: Any
-        ) : this(stringResource, args.toList())
-
         override suspend fun build(): CharSequence {
-            val resolvedArgs = resolveArgs(args)
-            return resolvedArgs?.takeIf { it.isNotEmpty() }?.let {
-                if (it.any { it is AnnotatedString}) {
-                    buildAnnotatedString(
-                        resolvedArgs = resolvedArgs,
-                        baseStringProvider = {
-                            getStringWithPlaceholders(
-                                stringResource = stringResource,
-                                placeholdersCount = args.size
-                            )
-                        }
-                    )
-                } else {
-                    getString(stringResource, *resolvedArgs.toTypedArray())
-                }
-            } ?: getString(stringResource)
+            val resolvedArgs = args.map {
+                resolveArg(it.first) to it.second
+            }
+            val annotated = baseAnnotations.isNotEmpty() ||
+                    args.any { it.second.isNotEmpty() } ||
+                    resolvedArgs.any { it.first is AnnotatedString }
+
+            return if (annotated) {
+                buildAnnotatedString(
+                    resolvedArgs = resolvedArgs,
+                    baseAnnotations = baseAnnotations,
+                    baseStringProvider = {
+                        getStringWithPlaceholders(
+                            stringResource = stringResource,
+                            placeholdersCount = args.size
+                        )
+                    }
+                )
+            } else if (resolvedArgs.isNotEmpty()) {
+                getString(stringResource, *resolvedArgs.map { it.first }.toTypedArray())
+            } else {
+                getString(stringResource)
+            }
         }
     }
 
     data class PluralRes(
         val pluralStringResource: PluralStringResource,
         val quantity: Int,
-        val args: List<Any> = listOf(quantity)
+        val args: List<Pair<Any, List<UITextAnnotation>>>,
+        val baseAnnotations: List<UITextAnnotation>
     ) : UIText() {
 
-        constructor(
-            pluralStringResource: PluralStringResource,
-            quantity: Int,
-            vararg args: Any
-        ) : this(pluralStringResource, quantity, args.toList())
-
         override suspend fun build(): CharSequence {
-            val resolvedArgs = resolveArgs(args) ?: emptyList()
-            return if (resolvedArgs.any { it is AnnotatedString }) {
+            val resolvedArgs = args.map {
+                resolveArg(it.first) to it.second
+            }
+            val annotated = baseAnnotations.isNotEmpty() ||
+                    args.any { it.second.isNotEmpty() } ||
+                    resolvedArgs.any { it.first is AnnotatedString }
+
+            return if (annotated) {
                 buildAnnotatedString(
                     resolvedArgs = resolvedArgs,
+                    baseAnnotations = baseAnnotations,
                     baseStringProvider = {
                         getQuantityStringWithPlaceholders(
                             pluralStringResource = pluralStringResource,
@@ -278,72 +249,18 @@ sealed class UIText {
                         )
                     }
                 )
+            } else if (resolvedArgs.isNotEmpty()) {
+                getPluralString(pluralStringResource, quantity,
+                    *resolvedArgs.map { it.first }.toTypedArray())
             } else {
-                getPluralString(pluralStringResource, quantity, *resolvedArgs.toTypedArray())
+                getPluralString(pluralStringResource, quantity)
             }
-        }
-    }
-
-    data class ResAnnotated(
-        val stringResource: StringResource,
-        val args: List<Pair<Any, List<UITextAnnotation>?>>,
-        val baseAnnotations: List<UITextAnnotation>? = null
-    ) : UIText() {
-
-        constructor(
-            stringResource: StringResource,
-            vararg args: Pair<Any, List<UITextAnnotation>?>,
-            baseAnnotations: List<UITextAnnotation>? = null
-        ) : this(stringResource, args.toList(), baseAnnotations)
-
-        override suspend fun build(): CharSequence {
-            return resolveArgsAndBuildAnnotatedString(
-                args = args,
-                baseAnnotations = baseAnnotations,
-                baseStringProvider = {
-                    getStringWithPlaceholders(
-                        stringResource = stringResource,
-                        placeholdersCount = args.size
-                    )
-                }
-            )
-        }
-    }
-
-    data class PluralResAnnotated(
-        val pluralStringResource: PluralStringResource,
-        val quantity: Int,
-        val args: List<Pair<Any, List<UITextAnnotation>?>>,
-        val baseAnnotations: List<UITextAnnotation>? = null
-    ) : UIText() {
-
-        constructor(
-            pluralStringResource: PluralStringResource,
-            quantity: Int,
-            vararg args: Pair<Any, List<UITextAnnotation>?>,
-            baseAnnotations: List<UITextAnnotation>? = null
-        ) : this(pluralStringResource, quantity, args.toList(), baseAnnotations)
-
-        override suspend fun build(): CharSequence {
-            return resolveArgsAndBuildAnnotatedString(
-                args = args,
-                baseAnnotations = baseAnnotations,
-                baseStringProvider = {
-                    getQuantityStringWithPlaceholders(
-                        pluralStringResource = pluralStringResource,
-                        quantity = quantity,
-                        placeholdersCount = args.size
-                    )
-                }
-            )
         }
     }
 
     data class Compound(
         val components: List<UIText>
     ) : UIText() {
-
-        constructor(vararg components: UIText) : this(components.toList())
 
         private fun concat(parts: List<CharSequence>): CharSequence {
             if (parts.isEmpty())
@@ -352,8 +269,8 @@ sealed class UIText {
             if (parts.size == 1)
                 return parts[0]
 
-            val styled = parts.any { it is AnnotatedString }
-            return if (styled) {
+            val annotated = parts.any { it is AnnotatedString }
+            return if (annotated) {
                 buildAnnotatedString {
                     parts.forEach {
                         append(it)
