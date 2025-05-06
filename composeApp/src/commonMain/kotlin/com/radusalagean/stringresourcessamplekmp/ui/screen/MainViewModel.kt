@@ -95,9 +95,7 @@ class MainViewModel(
                     arg(
                         UIText {
                             res(Res.string.shopping_cart_status_insert_shopping_cart) {
-                                annotation {
-                                    +SpanStyle(color = Color.Red)
-                                }
+                                +SpanStyle(color = Color.Red)
                             }
                         }
                     )
@@ -111,9 +109,7 @@ class MainViewModel(
                     arg(30.toString()) {
                         +SpanStyle(color = CustomGreen)
                     }
-                    annotation {
-                        +SpanStyle(fontWeight = FontWeight.Bold)
-                    }
+                    +SpanStyle(fontWeight = FontWeight.Bold)
                 }
             }
         ),
@@ -131,18 +127,14 @@ class MainViewModel(
                                 arg(30.toString()) {
                                     +SpanStyle(color = CustomGreen)
                                 }
-                                annotation {
-                                    +SpanStyle(fontWeight = FontWeight.Bold)
-                                }
+                                +SpanStyle(fontWeight = FontWeight.Bold)
                             }
                         }
                     )
                     arg(
                         UIText {
                             res(Res.string.shopping_cart_status_insert_shopping_cart) {
-                                annotation {
-                                    +SpanStyle(color = Color.Red)
-                                }
+                                +SpanStyle(color = Color.Red)
                             }
                         }
                     )
@@ -163,9 +155,7 @@ class MainViewModel(
                                 arg(30.toString()) {
                                     +SpanStyle(color = CustomGreen)
                                 }
-                                annotation {
-                                    +SpanStyle(fontWeight = FontWeight.Bold)
-                                }
+                                +SpanStyle(fontWeight = FontWeight.Bold)
                             }
                         }
                     )
@@ -179,17 +169,15 @@ class MainViewModel(
                 }
                 raw(" ")
                 res(Res.string.proceed_to_checkout) {
-                    annotation {
-                        +LinkAnnotation.Url(
-                            url = "https://example.com",
-                            styles = TextLinkStyles(
-                                style = SpanStyle(
-                                    color = Color.Blue,
-                                    textDecoration = TextDecoration.Underline
-                                )
+                    +LinkAnnotation.Url(
+                        url = "https://example.com",
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                color = Color.Blue,
+                                textDecoration = TextDecoration.Underline
                             )
                         )
-                    }
+                    )
                 }
             }
         ),
@@ -200,16 +188,11 @@ class MainViewModel(
                     arg("Radu")
                 }
                 res(Res.string.shopping_cart_status) {
-                    annotation {
-                        +ParagraphStyle()
-                    }
+                    +ParagraphStyle()
                     arg(
                         UIText {
                             pluralRes(Res.plurals.products, 30) {
-                                annotation {
-                                    +SpanStyle(fontWeight = FontWeight.Bold)
-                                    SpanStyle(fontWeight = FontWeight.Bold) // TODO: Restrict if possible
-                                }
+                                +SpanStyle(fontWeight = FontWeight.Bold)
                                 arg(30.toString()) {
                                     +SpanStyle(color = CustomGreen)
                                 }
@@ -225,17 +208,15 @@ class MainViewModel(
                     }
                 }
                 res(Res.string.proceed_to_checkout) {
-                    annotation {
-                        +LinkAnnotation.Url(
-                            url = "https://example.com",
-                            styles = TextLinkStyles(
-                                style = SpanStyle(
-                                    color = Color.Blue,
-                                    textDecoration = TextDecoration.Underline
-                                )
+                    +LinkAnnotation.Url(
+                        url = "https://example.com",
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                color = Color.Blue,
+                                textDecoration = TextDecoration.Underline
                             )
                         )
-                    }
+                    )
                 }
             }
         ),

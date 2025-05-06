@@ -23,7 +23,7 @@ class UITextBuilder {
         stringResource: StringResource,
         resBuilder: ResBuilder.() -> Unit = { }
     ) {
-        val config = ResBuilder().apply(resBuilder).build()
+        val config = ResBuilder().apply(resBuilder).buildResConfig()
         components += UIText.Res(
             stringResource = stringResource,
             args = config.args,
@@ -38,7 +38,7 @@ class UITextBuilder {
             arg(quantity.toString())
         }
     ) {
-        val config = ResBuilder().apply(resBuilder).build()
+        val config = ResBuilder().apply(resBuilder).buildResConfig()
         components += UIText.PluralRes(
             pluralStringResource = pluralStringResource,
             quantity = quantity,
@@ -55,25 +55,20 @@ class UITextBuilder {
 }
 
 @UITextDslMarker
-class ResBuilder {
-    private val annotations = mutableListOf<UITextAnnotation>()
+class ResBuilder : AnnotationsBuilder() {
     private val args = mutableListOf<Pair<Any, List<UITextAnnotation>>>()
 
-    fun annotation(annotationsBlock: AnnotationsBuilder.() -> Unit) {
-        annotations += AnnotationsBuilder().apply(annotationsBlock).build()
-    }
-
     fun arg(value: CharSequence, annotationsBuilder: AnnotationsBuilder.() -> Unit = { }) {
-        val annotations = AnnotationsBuilder().apply(annotationsBuilder).build()
+        val annotations = AnnotationsBuilder().apply(annotationsBuilder).buildAnnotations()
         args += value to annotations
     }
 
     fun arg(value: UIText, annotationsBuilder: AnnotationsBuilder.() -> Unit = { }) {
-        val annotations = AnnotationsBuilder().apply(annotationsBuilder).build()
+        val annotations = AnnotationsBuilder().apply(annotationsBuilder).buildAnnotations()
         args += value to annotations
     }
 
-    fun build(): ResAnnotatedConfig = ResAnnotatedConfig(
+    fun buildResConfig(): ResAnnotatedConfig = ResAnnotatedConfig(
         annotations = annotations,
         args = args
     )
@@ -85,8 +80,8 @@ data class ResAnnotatedConfig(
 )
 
 @UITextDslMarker
-class AnnotationsBuilder {
-    private val annotations = mutableListOf<UITextAnnotation>()
+open class AnnotationsBuilder {
+    protected val annotations = mutableListOf<UITextAnnotation>()
 
     operator fun SpanStyle.unaryPlus() {
         annotations.add(UITextAnnotation.Span(this))
@@ -100,5 +95,5 @@ class AnnotationsBuilder {
         annotations.add(UITextAnnotation.Link(this))
     }
 
-    fun build(): List<UITextAnnotation> = annotations
+    fun buildAnnotations(): List<UITextAnnotation> = annotations
 }
