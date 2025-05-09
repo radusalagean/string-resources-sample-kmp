@@ -236,7 +236,6 @@ class MainViewModel(
                             url = "https://radusalagean.com/example-terms-of-service/",
                             styles = linkStyle
                         )
-                        +SpanStyle(color = Color.Green)
                     }
                     arg(
                         UIText {
